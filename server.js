@@ -23,7 +23,8 @@ var server = http.createServer(function (request, response) {
         response.setHeader('Access-Control-Allow-Origin', '*');
 
         /******** 从这里开始看，上面不要看 ************/
-        if (path === '/uptoken') {
+
+        if (path.split('?')[0] === '/uptoken') {
             response.statusCode = 200;
             response.setHeader('Content-type', 'text/json;charset=utf-8');
 
