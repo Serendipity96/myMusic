@@ -109,7 +109,10 @@ body {
     justify-content: center;
     flex-direction: column;
     padding-left: 15px;
+    cursor: pointer;
 }
+
+
 .songList ul li:nth-child(odd){
     width: 600px;
     height: 40px;
@@ -125,6 +128,13 @@ body {
     border-radius: 5px;
 }
 
+.songList ul li:hover{
+    color: #31C27C;
+}
+
+.songList ul li.wordActive{
+    color: #31C27C;
+}
 /*播放器*/
 .audio-wrapper{
     width: 100%;

@@ -17,11 +17,25 @@
             liList.map((domLi) => {
                 $el.find('ul').append(domLi);
             });
+        },
+        activeLiItem(li) {
+            $(li).addClass('wordActive')
+                .siblings().removeClass('wordActive');
         }
     };
     let model = {
         data: {
             songs: []
+        },
+        find() {
+            var query = new AV.Query('Song');
+            return query.find().then((songs) => {
+                //leancloud进行了封装，里面有很多方法，只要几个需要的属性，so这里map了一下
+                this.data.songs = songs.map((song) => {
+                    return {id: song.id, ...song.attributes}
+                });
+                return songs;//promise的特点，得到什么就return什么
+            })
         }
     };
     let controller = {
@@ -29,11 +43,25 @@
             this.view = view;
             this.model = model;
             this.view.render(this.model.data);
+            this.bindEvents();
+            this.bindEventHub();
+            this.getAllSongs();
+        },
+        getAllSongs() {
+            return this.model.find().then(() => {
+                this.view.render(this.model.data)
+            })
+        },
+        bindEvents() {
+            $(this.view.el).on('click', 'li', (e) => {
+                this.view.activeLiItem(e.currentTarget);
+            })
+        },
+        bindEventHub() {
             window.eventHub.on('create', (songData) => {
                 this.model.data.songs.push(songData);
-                console.log(songData)
                 this.view.render(this.model.data);
-            })
+            });
         }
     };
     controller.init(view, model)
