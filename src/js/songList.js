@@ -11,7 +11,7 @@
             $el.html(this.template);
             let {songs} = data;
             let liList = songs.map((song) => {
-                return $('<li></li>').text(song.songName);
+                return $('<li></li>').text(song.songName).attr('data-song-id',song.id);
             });
             $el.find('ul').empty();
             liList.map((domLi) => {
@@ -55,6 +55,19 @@
         bindEvents() {
             $(this.view.el).on('click', 'li', (e) => {
                 this.view.activeLiItem(e.currentTarget);
+                let songId = e.currentTarget.getAttribute('data-song-id');
+                let data;
+                let songs = this.model.data.songs;
+                for(let i = 0;i<songs.length;i++){
+                    if(songId === songs[i].id){
+                        data = songs[i];
+                        break;
+                    }
+                }
+                //深拷贝，防止改了之后有bug
+                let str = JSON.stringify(data);
+                let obj = JSON.parse(str);
+                window.eventHub.emit('select',obj);
             })
         },
         bindEventHub() {
