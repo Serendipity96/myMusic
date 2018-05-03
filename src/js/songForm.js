@@ -57,9 +57,7 @@
             song.set('url', data.url);
             // 保存到云端
             return song.save().then((response) => {
-                console.log(1)
                 Object.assign(this.data, data);
-                console.log(2)
                 return response;
             });
         },
