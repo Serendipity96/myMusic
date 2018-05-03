@@ -48,6 +48,21 @@
             url: '',
             id: ''
         },
+        update(data) {
+            // 第一个参数是 className，第二个参数是 objectId
+            var song = AV.Object.createWithoutData('Song', this.data.id);
+            // 修改属性
+            song.set('songName', data.songName);
+            song.set('singer', data.singer);
+            song.set('url', data.url);
+            // 保存到云端
+            return song.save().then((response) => {
+                console.log(1)
+                Object.assign(this.data, data);
+                console.log(2)
+                return response;
+            });
+        },
         create(data) {
             // 声明类型
             var Song = AV.Object.extend('Song');
@@ -73,29 +88,63 @@
             this.view.render(this.model.data);
             this.bindEvents();
             window.eventHub.on('upload', (data) => {
+                //查数据库是不是已经存在这首歌了,清空的是form
+                // if(this.model.data.id){
+                //     console.log(1)
+                //     this.model.data = {
+                //         name:'',
+                //         url:'',
+                //         id:'',
+                //         singer:''
+                //     }
+                // }else{
+                //     console.log(2)
+                //     Object.assign(this.model.data,data)
+                // }
+                this.model.data = data;
+                this.view.render(this.model.data);
+
+            })
+            window.eventHub.on('select', (data) => {
                 this.model.data = data;
                 this.view.render(this.model.data);
             })
-            window.eventHub.on('select',(data)=>{
-                this.model.data = data;
-                this.view.render(this.model.data);
+        },
+        create() {
+            let needs = 'songName singer url'.split(' ');
+            let data = {};
+            needs.map((str) => {
+                data[str] = this.view.$el.find(`[name="${str}"]`).val();
+            });
+            this.model.create(data)
+                .then(() => {
+                    this.view.reset();
+                    //深拷贝
+                    let str = JSON.stringify(this.model.data);// JavaScript 值转换为 JSON 字符串
+                    let obj = JSON.parse(str);//JSON 字符串变对象
+                    window.eventHub.emit('create', obj);
+                })
+        },
+        update() {
+            let needs = 'songName singer url'.split(' ');
+            let data = {};
+            needs.map((str) => {
+                data[str] = this.view.$el.find(`[name="${str}"]`).val();
+            });
+            //更新
+            this.model.update(data).then(() => {
+                window.eventHub.emit('update', JSON.parse(JSON.stringify(this.model.data)))//通知songlist
             })
         },
         bindEvents() {
             this.view.$el.on('submit', 'form', (e) => {
                 e.preventDefault();
-                let needs = 'songName singer url'.split(' ');
-                let data = {};
-                needs.map((str) => {
-                    data[str] = this.view.$el.find(`[name="${str}"]`).val();
-                });
-                this.model.create(data)
-                    .then(() => {
-                        this.view.reset();
-                        let str = JSON.stringify(this.model.data);// JavaScript 值转换为 JSON 字符串
-                        let obj = JSON.parse(str);//JSON 字符串变对象
-                        window.eventHub.emit('create', obj);
-                    })
+                if (this.model.data.id) {
+                    this.update();
+                } else {
+                    this.create();
+                }
+
             })
         }
     };
