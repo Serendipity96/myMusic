@@ -28,7 +28,7 @@
                 runtimes: 'html5',    //上传模式,依次退化
                 browse_button: this.view.find('#pickfiles'), //上传选择的点选按钮，**必需**
                 uptoken_url: 'http://localhost:8888/uptoken',
-                domain: 'ofckm3qr5.bkt.clouddn.com',   //bucket 域名，下载资源时用到，**必需**
+                domain: 'p7gss7pfs.bkt.clouddn.com',   //bucket 域名，下载资源时用到，**必需**
                 get_new_uptoken: false,  //设置上传文件的时候是否每次都重新获取新的token
                 container: this.view.find('#createSong'),//上传区域DOM ID，默认是browser_button的父元素，
                 max_file_size: '30mb',           //最大文件体积限制
